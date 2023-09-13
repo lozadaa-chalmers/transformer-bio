@@ -7,7 +7,7 @@ def transform_h5_to_matrix(h5_file_directory: str, count_matrix_directory: str, 
     directory = h5_file_directory
 
     # List all files with the .h5 extension in the directory
-    h5_files = [f for f in os.listdir(directory) if f.endswith('.h5')]
+    h5_files = [f for f in os.listdir(directory) if f.endswith('.h5')] # also possible to only one
 
     # Extract dataset names by removing the .h5 extension
     dataset_names = [os.path.splitext(filename)[0] for filename in h5_files]
@@ -41,8 +41,8 @@ def transform_h5_to_matrix(h5_file_directory: str, count_matrix_directory: str, 
                 if i >= indptr[cell_id + 1]:
                     cell_id += 1
 
-                if cell_id >= shape[0]:
-                    break
+                #if cell_id >= shape[0]:
+                #    break
 
                 M[cell_id, indices[i]] = data[i]
 
