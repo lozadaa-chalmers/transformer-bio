@@ -17,19 +17,18 @@ Written: ronjah@chalmers.se
 def read_data(filename: str = None, mode: str = 'csr') -> scp.sparse.csr_matrix:
     with h5py.File(filename, "r") as f:
         express_handle = f["exprs"]
-
         shape = express_handle.get('shape')
         indices = express_handle.get('indices')
 
         if mode == 'csr':
-            if max(indices) <= shape[1]:
+            if not max(indices) <= shape[1]:
                 raise ValueError('Not CSR format.')
             reconstructed_matrix = scp.sparse.csr_matrix((express_handle.get('data'),
                                                           express_handle.get('indices'),
                                                           express_handle.get('indptr')),
                                                          shape=express_handle.get('shape'))
         elif mode == 'csc':
-            if max(indices) <= shape[0]:
+            if not max(indices) <= shape[0]:
                 raise ValueError('Not CSC format.')
             reconstructed_matrix = scp.sparse.csc_matrix((express_handle.get('data'),
                                                           express_handle.get('indices'),
