@@ -21,14 +21,16 @@ def read_data(filename: str = None, csr: bool = True) -> scp.sparse.csr_matrix:
         if csr:
             if n_genes != shape[1] or n_cells != shape[0]:
                 raise ValueError('Not CSR format.')
-        else:
-            if n_genes != shape[0] or n_cells != shape[1]:
-                raise ValueError('Not CSC format.')
-            
-        reconstructed_matrix = scp.sparse.csr_matrix((express_handle.get('data'),
+            reconstructed_matrix = scp.sparse.csr_matrix((express_handle.get('data'),
                                                       express_handle.get('indices'),
                                                       express_handle.get('indptr')),
                                                       shape=express_handle.get('shape'))
-
+        else:
+            if n_genes != shape[0] or n_cells != shape[1]:
+                raise ValueError('Not CSC format.')
+            reconstructed_matrix = scp.sparse.csc_matrix((express_handle.get('data'),
+                                                      express_handle.get('indices'),
+                                                      express_handle.get('indptr')),
+                                                      shape=express_handle.get('shape'))       
     return reconstructed_matrix
 
