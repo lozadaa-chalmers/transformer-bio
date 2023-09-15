@@ -12,14 +12,25 @@ Test data_handling
 
 
 class TestReadData(unittest.TestCase):
+    data_path = os.path.join('\\'.join(os.getcwd().split('\\')[:-2]), gs.TEST_DATA_PATH)
 
-    def test_matrix_reconstruction(self, mode='csr'):
-        data_path = os.path.join('\\'.join(os.getcwd().split('\\')[:-2]), gs.TEST_DATA_PATH)
-        cu.clean(folder_path=data_path)
+    def tearDown(self) -> None:
+        cu.clean(folder_path=self.data_path)
+
+    def test_matrix_reconstruction_csr(self, mode='csr'):
         simulated_matrix = test_data_transformation.simulate_h5_data(mode=mode,
-                                                                     file_path=data_path)
+                                                                     file_path=self.data_path)
 
-        reconstructed_matrix = read_data(filename=os.path.join(data_path, 'simulated_h5_data.h5'),
+        reconstructed_matrix = read_data(filename=os.path.join(self.data_path, 'simulated_h5_data.h5'),
+                                         mode=mode)
+        with self.assertRaises(ValueError):
+            self.assertEqual(simulated_matrix.toarray(), reconstructed_matrix.toarray())
+
+    def test_matrix_reconstruction_csc(self, mode='csc'):
+        simulated_matrix = test_data_transformation.simulate_h5_data(mode=mode,
+                                                                     file_path=self.data_path)
+
+        reconstructed_matrix = read_data(filename=os.path.join(self.data_path, 'simulated_h5_data.h5'),
                                          mode=mode)
         with self.assertRaises(ValueError):
             self.assertEqual(simulated_matrix.toarray(), reconstructed_matrix.toarray())
