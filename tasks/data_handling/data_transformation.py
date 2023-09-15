@@ -1,36 +1,41 @@
 import h5py
 import scipy as scp
+
 '''
-read_data(filename, csr)
-Function that transforms h5-file to a sparse matrix
+read_data(filename, mode)
+Function that transforms h5-file to a sparse matrix.
 
-- str filename: path to h5-file to read.
-- bool csr: True if CSR-format. False if CSC-format.
+filename: str. Path to h5-file to read. Default None.
+mode: str. 'csr' for Compressed Sparse Row or 'csc' for Compressed Sparse Column. Default 'csr'.
 
-Returns: sparse reconstructed matrix, tuples of form ((row, col), value)
+Returns: sparse reconstructed matrix, tuples of form ((row, col), value).
+
+Written: ronjah@chalmers.se
 '''
 
-def read_data(filename: str = None, csr: bool = True) -> scp.sparse.csr_matrix:
+
+def read_data(filename: str = None, mode: str = 'csr') -> scp.sparse.csr_matrix:
     with h5py.File(filename, "r") as f:
         express_handle = f["exprs"]
 
         shape = express_handle.get('shape')
-        n_genes = len(f["var_names"])
-        n_cells = len(f["obs_names"])
+        indices = express_handle.get('indices')
 
-        if csr:
-            if n_genes != shape[1] or n_cells != shape[0]:
+        if mode == 'csr':
+            if max(indices) <= shape[1]:
                 raise ValueError('Not CSR format.')
             reconstructed_matrix = scp.sparse.csr_matrix((express_handle.get('data'),
-                                                      express_handle.get('indices'),
-                                                      express_handle.get('indptr')),
-                                                      shape=express_handle.get('shape'))
-        else:
-            if n_genes != shape[0] or n_cells != shape[1]:
+                                                          express_handle.get('indices'),
+                                                          express_handle.get('indptr')),
+                                                         shape=express_handle.get('shape'))
+        elif mode == 'csc':
+            if max(indices) <= shape[0]:
                 raise ValueError('Not CSC format.')
             reconstructed_matrix = scp.sparse.csc_matrix((express_handle.get('data'),
-                                                      express_handle.get('indices'),
-                                                      express_handle.get('indptr')),
-                                                      shape=express_handle.get('shape'))       
-    return reconstructed_matrix
+                                                          express_handle.get('indices'),
+                                                          express_handle.get('indptr')),
+                                                         shape=express_handle.get('shape'))
+        else:
+            raise ValueError(f'Choose a right value for mode. Current {mode}. Needed: [csr,csc]')
 
+    return reconstructed_matrix
