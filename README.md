@@ -23,9 +23,9 @@
 	
  	`git add what-you-want-to-add`  <- Add the specific files you want to add
 	
- 	`git commit -m` "some reference message" <- In case we need to go back
+ 	`git commit -m "some reference message"` <- In case we need to go back
 	
- 	`git push origin name-of-your-branch`
+ 	`git push origin name-of-your-branch` <- To push changes to your branch
 
 4. Merge your branch with "main". Now that all your changes are correct, move to "main" and merge.
 
