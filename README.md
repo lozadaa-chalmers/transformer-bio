@@ -4,7 +4,9 @@
 
 1. Make sure that you have the latest version of the code and that you are standing on the branch "main".
    *`git branch` <- to check where are you standing
+   
    *`git checkout main` <- to move to branch "main"
+   
    *`git pull`
 
 3. Create a branch to write all your code. Make sure that you're on the new branch before writing anything. **The name of your branch should always begin with your name** (i.e. 'alejandro/some-name-for-the-branch-related-to-a-task')
