@@ -1,7 +1,7 @@
 # transformer-bio
 
 # How to contribute?
-1. Make sure that you have the latest version of the code and that you are standing on the branch "main".
+1. **Before writign any code** make sure that you have the latest version of the repo and that you are standing on the branch "main".
   
    `git branch` <- To check where are you standing
    
