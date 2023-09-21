@@ -1,7 +1,7 @@
 # transformer-bio
 
 # How to contribute?
-Make sure that you have the latest version of the code and that you are standing on the branch "main".
+1. Make sure that you have the latest version of the code and that you are standing on the branch "main".
   
    `git branch` <- to check where are you standing
    
@@ -9,19 +9,23 @@ Make sure that you have the latest version of the code and that you are standing
    
    `git pull`
 
-3. Create a branch to write all your code. Make sure that you're on the new branch before writing anything. **The name of your branch should always begin with your name** (i.e. 'alejandro/some-name-for-the-branch-related-to-a-task')
+2. Create a branch to write all your code. Make sure that you're on the new branch before writing anything. **The name of your branch should always begin with your name** (i.e. 'alejandro/some-name-for-the-branch-related-to-a-task')
 
-	-`git checkout -b 'your-name/name-of-the-branch'` <- to create and move to the new branch.
-	-`git branch` <- to check that you're actually in the right place. If not, got to step 1.
+	`git checkout -b 'your-name/name-of-the-branch'` <- to create and move to the new branch.
+	
+ 	`git branch` <- to check that you're actually in the right place. If not, got to step 1.
 
 	Note: it's good practice to create a branch for every task you'll be coding. Do not put several tasks in one branch please, it will get messy.
 
-1. Write your code and push it to your branch. Whilst on your branch, write all your code. Once you're done, do the following:
+3. Write your code and push it to your branch. Whilst on your branch, write all your code. Once you're done, do the following:
 
-	-`git status` <- to check your changes.
-	-`git add what-you-want-to-add`  <- add the specific files you want to add
-	-`git commit -m` "some reference message" <- in case we need to go back
-	-`git push origin name-of-your-branch`
+	`git status` <- to check your changes.
+	
+ 	`git add what-you-want-to-add`  <- add the specific files you want to add
+	
+ 	`git commit -m` "some reference message" <- in case we need to go back
+	
+ 	`git push origin name-of-your-branch`
 
 4. Merge your branch with "main". Now that all your changes are correct, move to "main" and merge.
 
