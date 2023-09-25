@@ -3,7 +3,7 @@ import scipy as scp
 
 def read_data(filename: str = None, 
               mode: str = 'csr'
-              ) -> scp.sparse.csr_matrix:
+              ) -> scp.sparse.csr_matrix | scp.sparse.csc_matrix:
     """
     ### Function that transforms h5-file to a sparse matrix.
 
@@ -14,7 +14,7 @@ def read_data(filename: str = None,
         - mode (str): 'csr' for Compressed Sparse Row or 'csc' for Compressed Sparse Column. Default 'csr'.
 
     #### Returns: 
-        - csr_matrix: Sparse reconstructed matrix, tuples of form ((row, col), value).
+        - sparse.csr_matrix | sparse.csc_matrix: Sparse reconstructed matrix, tuples of form ((row, col), value). CSR or CSC decided by 'mode'.
 
     ---
     Written: ronjah@chalmers.se
