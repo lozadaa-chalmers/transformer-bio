@@ -1,20 +1,24 @@
 import h5py
 import scipy as scp
 
-'''
-read_data(filename, mode)
-Function that transforms h5-file to a sparse matrix.
+def read_data(filename: str = None, 
+              mode: str = 'csr'
+              ) -> scp.sparse.csr_matrix | scp.sparse.csc_matrix:
+    """
+    ### Function that transforms h5-file to a sparse matrix.
 
-filename: str. Path to h5-file to read. Default None.
-mode: str. 'csr' for Compressed Sparse Row or 'csc' for Compressed Sparse Column. Default 'csr'.
+    ---
+    
+    #### Args:
+        - filename (str): Path to h5-file to read. Default None.
+        - mode (str): 'csr' for Compressed Sparse Row or 'csc' for Compressed Sparse Column. Default 'csr'.
 
-Returns: sparse reconstructed matrix, tuples of form ((row, col), value).
+    #### Returns: 
+        - sparse.csr_matrix | sparse.csc_matrix: Sparse reconstructed matrix, tuples of form ((row, col), value). CSR or CSC decided by 'mode'.
 
-Written: ronjah@chalmers.se
-'''
-
-
-def read_data(filename: str = None, mode: str = 'csr') -> scp.sparse.csr_matrix:
+    ---
+    Written: ronjah@chalmers.se
+    """
     with h5py.File(filename, "r") as f:
         express_handle = f["exprs"]
         shape = express_handle.get('shape')
