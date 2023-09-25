@@ -11,7 +11,7 @@ def read_data(filename: str = None,
     
     #### Args:
         - filename (str): Path to h5-file to read. Default None.
-        - mode: str. 'csr' for Compressed Sparse Row or 'csc' for Compressed Sparse Column. Default 'csr'.
+        - mode (str): 'csr' for Compressed Sparse Row or 'csc' for Compressed Sparse Column. Default 'csr'.
 
     #### Returns: 
         - csr_matrix: Sparse reconstructed matrix, tuples of form ((row, col), value).
