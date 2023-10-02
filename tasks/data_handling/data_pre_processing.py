@@ -17,7 +17,8 @@ def create_count_matrix(
 
     ---
 
-    Annotated data matrix, where observations/cells are named by their barcode and variables/genes by gene name. Stores the following information:
+    Annotated data matrix, where observations/cells are named by their barcode and variables/genes by gene name.
+    Stores the following information:
 
     `~anndata.AnnData.X`
         The data matrix is stored
@@ -52,6 +53,17 @@ def quality_control(
         - adata (AnnData): AnnData object to perform quality control on.
 
     ---
+    #### Adds keys:
+        - `adata.obs['n_genes_by_counts']` Number of active genes per cell 
+        - `adata.obs['total_counts']` Sum of all gene expressions in each cell
+        - `adata.obs['total_counts_mt']` Sum of all mitochondrial expressions in each cell
+        - `adata.obs['pct_counts_mt']` Percent of total expression in each cell that are from mitochondrial expression
+        - `adata.var['mt']` Booleans of which variables are mitochondrial genes
+        - `adata.var['n_cells_by_counts']` Number of cells each gene is active
+        - `adata.var['total_counts']` Sum of expression of each gene over all cells
+        - `adata.var['mean_counts']` Average expression of each gene over all cells
+        - `adata.var['pct_dropout_by_counts']` Percentage of cells each gene has no expression in
+    ---
     Written: ronjah@chalmers.se
     """
     adata.var['mt'] = adata.var_names.str.startswith('MT-')  # annotate the group of mitochondrial genes as 'mt'
@@ -77,8 +89,8 @@ def remove_bad_cells(
         - adata (AnnData): AnnData object that has gone through quality control (QC). Default None
         - max_n_genes (int): Remove cells with a gene count over max_n_genes. Default 2500
         - min_n_genes (int): Remove cells with a gene count less than min_n_genes. Default 200
-        - mitochondrial_percent (float): Remove cells with a mitochondrial percent above mitochondrial_percent.
-            Default 5.0
+        - mitochondrial_percent (float): Remove cells with a mitochondrial expression percent above
+            mitochondrial_percent. Default 5.0
 
     #### Returns: 
         - AnnData: Where bad cells has been removed.
@@ -96,6 +108,7 @@ def normalize_data(
         adata: sc.AnnData,
         target_sum: float = 1e4,
         exclude_highly_expressed: bool = False,
+        max_fraction: float = 0.05,
         min_mean: float = 0.0125,
         max_mean: float = 3,
         min_dispersion: float = 0.5
@@ -109,16 +122,20 @@ def normalize_data(
         - adata (AnnData): AnnData object that has gone through quality control (QC).
         - target_sum (float): Float each cell sums up to. Default 1e4
         - exclude_highly_expressed (bool): If true, highly expressed cells are not part of normalization. Default False
+        - max_fraction (float): If `exclude_highly_expressed = True`, consider cells as highly expressed that have more
+            counts than max_fraction of the original total counts in at least one cell. Default 0.05
         - min_mean (float): Minimum cutoff for means. Default 0.0125
         - max_mean (float): Maximum cutoff for means. Default 3
-        - min_dispersion (float): The threshold for the minimum dispersion a gene must have to be considered highly variable. Default 0.5
+        - min_dispersion (float): The threshold for the minimum dispersion a gene must have to be considered highly
+            variable. Default 0.5
 
     ---
     Written: ronjah@chalmers.se
     """
     sc.pp.normalize_total(adata,
                           target_sum=target_sum,
-                          exclude_highly_expressed=exclude_highly_expressed)
+                          exclude_highly_expressed=exclude_highly_expressed,
+                          max_fraction=max_fraction)
     sc.pp.log1p(adata)
 
     sc.pp.highly_variable_genes(adata,
@@ -148,16 +165,18 @@ def pre_process_data_pipeline(
     
     #### Args:
         - file_path (str): File path to h5-file, default None
-        - plots (bool): True if want to save plots, else false. Default False
+        - plots (bool): True if wanting to save plots, else false. Default False
         - max_n_genes (int): Remove cells with a gene count over max_n_genes. Default 2500
         - min_n_genes (int): Remove cells with a gene count less than min_n_genes. Default 200
-        - mitochondrial_percent (float): Remove cells with a mitochondrial percent above mitochondrial_percent. Default 5.0
+        - mitochondrial_percent (float): Remove cells with a mitochondrial percent above mitochondrial_percent.
+            Default 5.0
         - target_sum (float): Float each cell sums up to. Default 1e4
         - exclude_highly_expressed (bool): If true, highly expressed cells are not part of normalization. Default False
         - min_mean (float): Minimum cutoff for means. Default 0.0125
         - max_mean (float): Maximum cutoff for means. Default 3
-        - min_dispersion (float): The threshold for the minimum dispersion a gene must have to be considered highly variable. Default 0.5
-        - n_top (int): The n_top genes with the highest mean fraction over all cells are plotted as boxplots. Default 20
+        - min_dispersion (float): The threshold for the minimum dispersion a gene must have to be considered highly
+            variable. Default 0.5
+        - n_top (int): The n_top genes with the highest mean fraction over all cells are plotted as boxplot. Default 20
         - save_format (str): File format for saved plots. Allowed formats: ['png', 'pdf', 'svg']. Default 'png'
 
     #### Returns: 
