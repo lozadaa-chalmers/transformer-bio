@@ -21,7 +21,7 @@ def create_count_matrix(
     Stores the following information:
 
     `~anndata.AnnData.X`
-        The data matrix is stored
+        The sparse data matrix is stored
     `~anndata.AnnData.obs_names`
         Cell names
     `~anndata.AnnData.var_names`
@@ -63,6 +63,9 @@ def quality_control(
         - `adata.var['total_counts']` Sum of expression of each gene over all cells
         - `adata.var['mean_counts']` Average expression of each gene over all cells
         - `adata.var['pct_dropout_by_counts']` Percentage of cells each gene has no expression in
+        
+    More information: https://scanpy.readthedocs.io/en/stable/generated/scanpy.pp.calculate_qc_metrics.html
+
     ---
     Written: ronjah@chalmers.se
     """
