@@ -32,7 +32,7 @@ def simulate_csc_h5_data(
     simulated_indptr = sparse_representation.indptr
     simulated_data = sparse_representation.data
     amount_mt = int(0.05*shape[0])
-    gene_names = np.array(['g'] * shape[0], dtype=str)
+    gene_names = np.array(['g'] * shape[0], dtype=object)
     cell_names = [f'C{i}' for i in range(1, shape[1] + 1)]
     id_number = [f'Id{i}' for i in range(1, shape[0]+1)]
     feature_type = ['Gene Expression'] * shape[0]

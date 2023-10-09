@@ -11,14 +11,14 @@ from tasks.test_helper.builders.utils import context_utils as cu
 
 
 class TestCreateCountMatrix(unittest.TestCase):
-    def tearDown(self) -> None:
-        cu.clean(folder_path=self.data_path)
-
     data_path = os.path.join('\\'.join(os.getcwd().split('\\')[:-2]), gs.TEST_DATA_PATH)
     file_name = 'simulated_csc_h5_data.h5'
     simulated_matrix, h5_path = test_data_pre_process.simulate_csc_h5_data(file_path=data_path,
                                                                            filename=file_name)
     reconstructed_adata = data_pre_processing.create_count_matrix(file_path=h5_path)
+
+    def tearDown(self) -> None:
+        cu.clean(folder_path=self.data_path)
 
     def test_need_file_path(self):
         with self.assertRaises(ValueError) as context:
@@ -34,9 +34,6 @@ class TestCreateCountMatrix(unittest.TestCase):
 
 
 class TestQualityControl(unittest.TestCase):
-    def tearDown(self) -> None:
-        cu.clean(folder_path=self.data_path)
-
     data_path = os.path.join('\\'.join(os.getcwd().split('\\')[:-2]), gs.TEST_DATA_PATH)
     file_name = 'simulated_csc_h5_data.h5'
     simulated_matrix, h5_path = test_data_pre_process.simulate_csc_h5_data(file_path=data_path,
@@ -45,6 +42,9 @@ class TestQualityControl(unittest.TestCase):
     data_pre_processing.quality_control(reconstructed_adata)
     n_genes = reconstructed_adata.n_vars
     n_cells = reconstructed_adata.n_obs
+
+    def tearDown(self) -> None:
+        cu.clean(folder_path=self.data_path)
 
     def test_n_genes_by_count(self):
         cells = self.reconstructed_adata.X.nonzero()[0]
@@ -94,15 +94,15 @@ class TestQualityControl(unittest.TestCase):
 
 
 class TestRemoveBadCells(unittest.TestCase):
-    def tearDown(self) -> None:
-        cu.clean(folder_path=self.data_path)
-
     data_path = os.path.join('\\'.join(os.getcwd().split('\\')[:-2]), gs.TEST_DATA_PATH)
     file_name = 'simulated_csc_h5_data.h5'
     simulated_matrix, h5_path = test_data_pre_process.simulate_csc_h5_data(file_path=data_path,
                                                                            filename=file_name)
     reconstructed_adata = data_pre_processing.create_count_matrix(file_path=h5_path)
     data_pre_processing.quality_control(reconstructed_adata)
+
+    def tearDown(self) -> None:
+        cu.clean(folder_path=self.data_path)
 
     def test_too_high_gene_count_removed(self):
         max_n_genes = int(self.reconstructed_adata.n_vars * 0.1)
@@ -145,9 +145,6 @@ class TestRemoveBadCells(unittest.TestCase):
 
 
 class TestNormalizeData(unittest.TestCase):
-    def tearDown(self) -> None:
-        cu.clean(folder_path=self.data_path)
-
     data_path = os.path.join('\\'.join(os.getcwd().split('\\')[:-2]), gs.TEST_DATA_PATH)
     file_name = 'simulated_csc_h5_data.h5'
     simulated_matrix, h5_path = test_data_pre_process.simulate_csc_h5_data(file_path=data_path,
@@ -177,15 +174,15 @@ class TestNormalizeData(unittest.TestCase):
 
     sc.pp.highly_variable_genes(reconstructed_adata_copy)
 
+    def tearDown(self) -> None:
+        cu.clean(folder_path=self.data_path)
+
     def test_normalize_data_right_order(self):
         with self.assertRaises(ValueError):
             self.assertEqual(self.reconstructed_adata.X, self.reconstructed_adata_copy.X)
 
 
 class TestPreProcessPipeline(unittest.TestCase):
-    def tearDown(self) -> None:
-        cu.clean(folder_path=self.data_path)
-
     data_path = os.path.join('\\'.join(os.getcwd().split('\\')[:-2]), gs.TEST_DATA_PATH)
     file_name = 'simulated_csc_h5_data.h5'
     simulated_matrix, h5_path = test_data_pre_process.simulate_csc_h5_data(file_path=data_path,
@@ -210,6 +207,9 @@ class TestPreProcessPipeline(unittest.TestCase):
                                                                    min_n_genes=min_n_genes,
                                                                    mitochondrial_percent=mt_pct,
                                                                    target_sum=target_sum)
+
+    def tearDown(self) -> None:
+        cu.clean(folder_path=self.data_path)
 
     def test_annData_X_equal(self):
         with self.assertRaises(ValueError):
