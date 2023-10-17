@@ -70,13 +70,14 @@ def quality_control(
     Written: ronjah@chalmers.se
     """
     adata.var['mt'] = adata.var_names.str.startswith('MT-')  # annotate the group of mitochondrial genes as 'mt'
+    # TODO change inplace to False and return modified adata object instead. Remember to modify tests.
     sc.pp.calculate_qc_metrics(adata,
                                qc_vars=['mt'],
                                percent_top=None,
                                log1p=False,
                                inplace=True)
 
-
+# TODO add remove_bad_genes to keep genes that are present in k or more cells.
 def remove_bad_cells(
         adata: sc.AnnData = None,
         max_n_genes: int = 2500,
@@ -117,7 +118,7 @@ def normalize_data(
         min_dispersion: float = 0.5
 ):
     """
-    ### Function that normalize the AnnData
+    ### Function that normalize the AnnData by cell.
 
     ---
     
@@ -135,12 +136,14 @@ def normalize_data(
     ---
     Written: ronjah@chalmers.se
     """
+    # TODO change from inplace= True to inplace = False and return normalized adata
     sc.pp.normalize_total(adata,
                           target_sum=target_sum,
                           exclude_highly_expressed=exclude_highly_expressed,
                           max_fraction=max_fraction)
+    # TODO same things as above, but now the parameter is called 'copy' and should be set to True
     sc.pp.log1p(adata)
-
+    # TODO move this to the function filtering for genes. Also, use inplace=False
     sc.pp.highly_variable_genes(adata,
                                 min_mean=min_mean,
                                 max_mean=max_mean,

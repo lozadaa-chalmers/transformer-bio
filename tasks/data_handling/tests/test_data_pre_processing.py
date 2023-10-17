@@ -1,8 +1,9 @@
-import scanpy as sc
-import unittest
 import os
-import numpy as np
+import unittest
 from collections import Counter
+
+import numpy as np
+import scanpy as sc
 
 import global_settings as gs
 from tasks.data_handling import data_pre_processing
@@ -177,11 +178,12 @@ class TestNormalizeData(unittest.TestCase):
     def tearDown(self) -> None:
         cu.clean(folder_path=self.data_path)
 
+    # TODO raise e to the power of each element of the log_normalized matrix, then sum by cell and check that all cells have the same sum
     def test_normalize_data_right_order(self):
         with self.assertRaises(ValueError):
             self.assertEqual(self.reconstructed_adata.X, self.reconstructed_adata_copy.X)
 
-
+# TODO no need for this test
 class TestPreProcessPipeline(unittest.TestCase):
     data_path = os.path.join('\\'.join(os.getcwd().split('\\')[:-2]), gs.TEST_DATA_PATH)
     file_name = 'simulated_csc_h5_data.h5'
