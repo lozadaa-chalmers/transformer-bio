@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import h5py
 import scipy as scp
 
-def read_data(filename: str = None, 
+
+def read_data(filename: str = None,
               mode: str = 'csr'
               ) -> scp.sparse.csr_matrix | scp.sparse.csc_matrix:
     """
