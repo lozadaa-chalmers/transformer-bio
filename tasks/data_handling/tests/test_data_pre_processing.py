@@ -1,8 +1,8 @@
-import scanpy as sc
-import unittest
 import os
-import numpy as np
+import unittest
 from collections import Counter
+
+import numpy as np
 
 import global_settings as gs
 from tasks.data_handling import data_pre_processing
@@ -40,6 +40,7 @@ class TestQualityControl(unittest.TestCase):
                                                                            filename=file_name)
     reconstructed_adata = data_pre_processing.create_count_matrix(file_path=h5_path)
     data_pre_processing.quality_control(reconstructed_adata)
+
     n_genes = reconstructed_adata.n_vars
     n_cells = reconstructed_adata.n_obs
 
@@ -161,28 +162,23 @@ class TestNormalizeData(unittest.TestCase):
                                                                max_n_genes=max_n_genes,
                                                                min_n_genes=min_n_genes,
                                                                mitochondrial_percent=mt_pct)
-    reconstructed_adata_copy = reconstructed_adata.copy()
+
     data_pre_processing.normalize_data(reconstructed_adata,
                                        target_sum=target_sum,
                                        exclude_highly_expressed=False)
+    reconstructed_adata_e = np.exp(reconstructed_adata.X.toarray())
+    row_sums = np.sum(reconstructed_adata_e, axis=1)
 
-    sc.pp.normalize_total(reconstructed_adata_copy,
-                          target_sum=target_sum,
-                          exclude_highly_expressed=False)
-
-    sc.pp.log1p(reconstructed_adata_copy)
-
-    sc.pp.highly_variable_genes(reconstructed_adata_copy)
+    diff = row_sums - row_sums[0]
 
     def tearDown(self) -> None:
         cu.clean(folder_path=self.data_path)
 
-    def test_normalize_data_right_order(self):
-        with self.assertRaises(ValueError):
-            self.assertEqual(self.reconstructed_adata.X, self.reconstructed_adata_copy.X)
+    def test_normalize_data_correct(self):
+        self.assertTrue(np.all(abs(self.diff) < 1e-3))
 
 
-class TestPreProcessPipeline(unittest.TestCase):
+class TestFilterGenes(unittest.TestCase):
     data_path = os.path.join('\\'.join(os.getcwd().split('\\')[:-2]), gs.TEST_DATA_PATH)
     file_name = 'simulated_csc_h5_data.h5'
     simulated_matrix, h5_path = test_data_pre_process.simulate_csc_h5_data(file_path=data_path,
@@ -195,25 +191,37 @@ class TestPreProcessPipeline(unittest.TestCase):
     mt_pct = 5
     target_sum = 1e4
 
+    min_mean = 0.0125
+    max_mean = 3
+    min_dispersion = 0
+    min_n_cells = 5
+
     reconstructed_adata = data_pre_processing.remove_bad_cells(reconstructed_adata,
                                                                max_n_genes=max_n_genes,
                                                                min_n_genes=min_n_genes,
                                                                mitochondrial_percent=mt_pct)
+
     data_pre_processing.normalize_data(reconstructed_adata,
                                        target_sum=target_sum,
                                        exclude_highly_expressed=False)
-    pipeline_adata = data_pre_processing.pre_process_data_pipeline(file_path=h5_path,
-                                                                   max_n_genes=max_n_genes,
-                                                                   min_n_genes=min_n_genes,
-                                                                   mitochondrial_percent=mt_pct,
-                                                                   target_sum=target_sum)
+
+    comparison_adata = reconstructed_adata.copy()
+    comparison_adata = comparison_adata[:, (comparison_adata.var.n_cells_by_counts > min_n_cells) &
+                                           (comparison_adata.var.mean_counts > min_mean) &
+                                           (comparison_adata.var.mean_counts < max_mean)]
+
+    reconstructed_adata_genes_filtered = data_pre_processing.filter_genes(reconstructed_adata,
+                                                                          min_mean=min_mean,
+                                                                          max_mean=max_mean,
+                                                                          min_dispersion=min_dispersion,
+                                                                          min_n_cells=min_n_cells)
 
     def tearDown(self) -> None:
         cu.clean(folder_path=self.data_path)
 
-    def test_annData_X_equal(self):
+    def test_correct_genes_removed(self):
         with self.assertRaises(ValueError):
-            self.assertEqual(self.reconstructed_adata.X, self.pipeline_adata.X)
+            self.assertEquals(self.comparison_adata.X.toarray(), self.reconstructed_adata_genes_filtered.X.toarray())
 
 
 if __name__ == '__main__':
