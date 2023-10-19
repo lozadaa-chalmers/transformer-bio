@@ -70,14 +70,13 @@ def quality_control(
     Written: ronjah@chalmers.se
     """
     adata.var['mt'] = adata.var_names.str.startswith('MT-')  # annotate the group of mitochondrial genes as 'mt'
-    # TODO change inplace to False and return modified adata object instead. Remember to modify tests.
     sc.pp.calculate_qc_metrics(adata,
                                qc_vars=['mt'],
                                percent_top=None,
                                log1p=False,
                                inplace=True)
 
-# TODO add remove_bad_genes to keep genes that are present in k or more cells.
+
 def remove_bad_cells(
         adata: sc.AnnData = None,
         max_n_genes: int = 2500,
@@ -113,12 +112,9 @@ def normalize_data(
         target_sum: float = 1e4,
         exclude_highly_expressed: bool = False,
         max_fraction: float = 0.05,
-        min_mean: float = 0.0125,
-        max_mean: float = 3,
-        min_dispersion: float = 0.5
 ):
     """
-    ### Function that normalize the AnnData by cell.
+    ### Function that normalize the AnnData by cell and logarithmize each value by Log(X+1) with the natural logarithm.
 
     ---
     
@@ -128,26 +124,56 @@ def normalize_data(
         - exclude_highly_expressed (bool): If true, highly expressed cells are not part of normalization. Default False
         - max_fraction (float): If `exclude_highly_expressed = True`, consider cells as highly expressed that have more
             counts than max_fraction of the original total counts in at least one cell. Default 0.05
-        - min_mean (float): Minimum cutoff for means. Default 0.0125
-        - max_mean (float): Maximum cutoff for means. Default 3
-        - min_dispersion (float): The threshold for the minimum dispersion a gene must have to be considered highly
-            variable. Default 0.5
 
     ---
     Written: ronjah@chalmers.se
     """
-    # TODO change from inplace= True to inplace = False and return normalized adata
     sc.pp.normalize_total(adata,
                           target_sum=target_sum,
                           exclude_highly_expressed=exclude_highly_expressed,
-                          max_fraction=max_fraction)
-    # TODO same things as above, but now the parameter is called 'copy' and should be set to True
-    sc.pp.log1p(adata)
-    # TODO move this to the function filtering for genes. Also, use inplace=False
-    sc.pp.highly_variable_genes(adata,
+                          max_fraction=max_fraction,
+                          inplace=True)
+    sc.pp.log1p(adata,
+                copy=False)
+
+
+def filter_genes(
+        adata: sc.AnnData,
+        min_mean: float = 0.0125,
+        max_mean: float = 3,
+        min_dispersion: float = 0.5,
+        n_top_genes: int = None,
+        min_n_cells: int = 50
+) -> sc.AnnData:
+    """
+    ### Function that filters out genes from AnnData.
+
+    ---
+    
+    #### Args:
+        - adata (AnnData): AnnData object that has gone through normalization.
+        - min_mean (float): Minimum cutoff for means, only used if n_top_genes unequals None. Default 0.0125
+        - max_mean (float): Maximum cutoff for means, only used if n_top_genes unequals None. Default 3
+        - min_dispersion (float): The threshold for the minimum dispersion a gene must have to be considered highly
+            variable, only used if n_top_genes unequals None. Default 0.5
+        - n_top_genes (int): Number of highly-variable genes to keep. Default None
+        - min_n_cells (int): Number of minimum cells each gene must have an expression in to be kept. Default 50
+
+    ### Returns:
+        - AnnData: AnnData object which have filtered out genes and labeled them according to the parameters given.
+
+    ---
+    Written: ronjah@chalmers.se
+    """
+
+    filtered_adata = adata[:, (adata.var.n_cells_by_counts > min_n_cells)]
+    sc.pp.highly_variable_genes(filtered_adata,
                                 min_mean=min_mean,
                                 max_mean=max_mean,
-                                min_disp=min_dispersion)
+                                min_disp=min_dispersion,
+                                n_top_genes=n_top_genes,
+                                inplace=True)
+    return filtered_adata
 
 
 def pre_process_data_pipeline(
@@ -158,10 +184,13 @@ def pre_process_data_pipeline(
         mitochondrial_percent: float = 5.0,
         target_sum: float = 1e4,
         exclude_highly_expressed: bool = False,
+        max_fraction: float = 0.05,
         min_mean: float = 0.0125,
         max_mean: float = 3,
         min_dispersion: float = 0.5,
-        n_top: int = 20,
+        n_top_genes: int = None,
+        min_n_cells: int = 50,
+        n_top_plot: int = 20,
         save_format: str = 'png'
 ) -> sc.AnnData:
     """
@@ -178,11 +207,16 @@ def pre_process_data_pipeline(
             Default 5.0
         - target_sum (float): Float each cell sums up to. Default 1e4
         - exclude_highly_expressed (bool): If true, highly expressed cells are not part of normalization. Default False
-        - min_mean (float): Minimum cutoff for means. Default 0.0125
-        - max_mean (float): Maximum cutoff for means. Default 3
+        - max_fraction (float): If `exclude_highly_expressed = True`, consider cells as highly expressed that have more
+            counts than max_fraction of the original total counts in at least one cell. Default 0.05
+        - min_mean (float): Minimum cutoff for means, only used if n_top_genes unequals None. Default 0.0125
+        - max_mean (float): Maximum cutoff for means, only used if n_top_genes unequals None. Default 3
         - min_dispersion (float): The threshold for the minimum dispersion a gene must have to be considered highly
-            variable. Default 0.5
-        - n_top (int): The n_top genes with the highest mean fraction over all cells are plotted as boxplot. Default 20
+            variable, only used if n_top_genes unequals None. Default 0.5
+        - n_top_genes (int): Number of highly-variable genes to keep. Default None
+        - min_n_cells (int): Number of minimum cells each gene must have an expression in to be kept. Default 50
+        - n_top_plot (int): The n_top genes with the highest mean fraction over all cells are plotted as boxplot.
+            Default 20
         - save_format (str): File format for saved plots. Allowed formats: ['png', 'pdf', 'svg']. Default 'png'
 
     #### Returns: 
@@ -194,6 +228,7 @@ def pre_process_data_pipeline(
         2. Quality control (QC)
         3. Remove bad cells
         4. Normalize data
+        5. Filter out genes and mark if they are highly variable
 
     ---
     Written: ronjah@chalmers.se
@@ -209,7 +244,7 @@ def pre_process_data_pipeline(
             raise ValueError(f"Invalid save_format: '{save_format}'. It must be one of {allowed_formats}")
 
         sc.pl.highest_expr_genes(adata,
-                                 n_top=n_top,
+                                 n_top=n_top_plot,
                                  save='.' + save_format,
                                  show=False)
 
@@ -235,20 +270,25 @@ def pre_process_data_pipeline(
                       save='_n_genes_by_count' + '.' + save_format,
                       show=False)
 
-    adata = remove_bad_cells(adata,
-                             max_n_genes=max_n_genes,
-                             min_n_genes=min_n_genes,
-                             mitochondrial_percent=mitochondrial_percent)
-    normalize_data(adata,
+    adata_filtered_cells = remove_bad_cells(adata,
+                                            max_n_genes=max_n_genes,
+                                            min_n_genes=min_n_genes,
+                                            mitochondrial_percent=mitochondrial_percent)
+    normalize_data(adata_filtered_cells,
                    target_sum=target_sum,
                    exclude_highly_expressed=exclude_highly_expressed,
-                   min_mean=min_mean,
-                   max_mean=max_mean,
-                   min_dispersion=min_dispersion)
+                   max_fraction=max_fraction)
+
+    adata_filtered_genes = filter_genes(adata=adata_filtered_cells,
+                                        min_mean=min_mean,
+                                        max_mean=max_mean,
+                                        min_dispersion=min_dispersion,
+                                        n_top_genes=n_top_genes,
+                                        min_n_cells=min_n_cells)
 
     if plots:
-        sc.pl.highly_variable_genes(adata,
+        sc.pl.highly_variable_genes(adata_filtered_genes,
                                     save='.' + save_format,
                                     show=False)
 
-    return adata
+    return adata_filtered_genes
