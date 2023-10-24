@@ -15,7 +15,8 @@ class TestCreateCountMatrix(unittest.TestCase):
     file_name = 'simulated_csc_h5_data.h5'
     simulated_matrix, h5_path = test_data_pre_process.simulate_csc_h5_data(file_path=data_path,
                                                                            filename=file_name)
-    reconstructed_adata = data_pre_processing.create_count_matrix(file_path=h5_path)
+    reconstructed_adata = data_pre_processing.create_count_matrix(file_path=h5_path,
+                                                                  make_genes_unique=True)
 
     def tearDown(self) -> None:
         cu.clean(folder_path=self.data_path)
@@ -38,7 +39,8 @@ class TestQualityControl(unittest.TestCase):
     file_name = 'simulated_csc_h5_data.h5'
     simulated_matrix, h5_path = test_data_pre_process.simulate_csc_h5_data(file_path=data_path,
                                                                            filename=file_name)
-    reconstructed_adata = data_pre_processing.create_count_matrix(file_path=h5_path)
+    reconstructed_adata = data_pre_processing.create_count_matrix(file_path=h5_path,
+                                                                  make_genes_unique=True)
     data_pre_processing.quality_control(reconstructed_adata)
 
     n_genes = reconstructed_adata.n_vars
@@ -99,7 +101,8 @@ class TestRemoveBadCells(unittest.TestCase):
     file_name = 'simulated_csc_h5_data.h5'
     simulated_matrix, h5_path = test_data_pre_process.simulate_csc_h5_data(file_path=data_path,
                                                                            filename=file_name)
-    reconstructed_adata = data_pre_processing.create_count_matrix(file_path=h5_path)
+    reconstructed_adata = data_pre_processing.create_count_matrix(file_path=h5_path,
+                                                                  make_genes_unique=True)
     data_pre_processing.quality_control(reconstructed_adata)
 
     def tearDown(self) -> None:
@@ -150,7 +153,8 @@ class TestNormalizeData(unittest.TestCase):
     file_name = 'simulated_csc_h5_data.h5'
     simulated_matrix, h5_path = test_data_pre_process.simulate_csc_h5_data(file_path=data_path,
                                                                            filename=file_name)
-    reconstructed_adata = data_pre_processing.create_count_matrix(file_path=h5_path)
+    reconstructed_adata = data_pre_processing.create_count_matrix(file_path=h5_path,
+                                                                  make_genes_unique=True)
     data_pre_processing.quality_control(reconstructed_adata)
 
     max_n_genes = int(reconstructed_adata.n_vars * 0.2)
@@ -183,7 +187,8 @@ class TestFilterGenes(unittest.TestCase):
     file_name = 'simulated_csc_h5_data.h5'
     simulated_matrix, h5_path = test_data_pre_process.simulate_csc_h5_data(file_path=data_path,
                                                                            filename=file_name)
-    reconstructed_adata = data_pre_processing.create_count_matrix(file_path=h5_path)
+    reconstructed_adata = data_pre_processing.create_count_matrix(file_path=h5_path,
+                                                                  make_genes_unique=True)
     data_pre_processing.quality_control(reconstructed_adata)
 
     max_n_genes = int(reconstructed_adata.n_vars * 0.2)
