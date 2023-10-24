@@ -2,7 +2,8 @@ import scanpy as sc
 
 
 def create_count_matrix(
-        file_path: str = None
+        file_path: str = None,
+        make_genes_unique: bool = False
 ) -> sc.AnnData:
     """
     ### Function that transforms 10x h5-file to a count matrix.
@@ -10,10 +11,12 @@ def create_count_matrix(
     ---
     
     #### Args:
-        - file_path (str): Path to a 10x hdf5 file. Default None
+        - file_path (str): Path to a 10x hdf5 file. Default None.
+        - make_genes_unique (bool): Boolean indicating if genes should be made unique. If True, '-i' suffix is added
+          to the variable name, where i is an integer. Default False.
 
     #### Returns: 
-        - AnnData: Count matrix from h5-file in file_path with unique variables
+        - AnnData: Count matrix from h5-file in file_path with unique variables.
 
     ---
 
@@ -37,7 +40,9 @@ def create_count_matrix(
     if file_path is None:
         raise ValueError('Need a path to h5-file.')
     adata = sc.read_10x_h5(file_path)
-    adata.var_names_make_unique()
+    if make_genes_unique:
+        adata.var_names_make_unique()
+
     return adata
 
 
