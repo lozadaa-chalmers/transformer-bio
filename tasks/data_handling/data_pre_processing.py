@@ -1,3 +1,5 @@
+import warnings
+
 import scanpy as sc
 
 
@@ -39,9 +41,16 @@ def create_count_matrix(
     """
     if file_path is None:
         raise ValueError('Need a path to h5-file.')
-    adata = sc.read_10x_h5(file_path)
+
     if make_genes_unique:
-        adata.var_names_make_unique()
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore",
+                                    message="Variable names are not unique. "
+                                            "To make them unique, call `.var_names_make_unique`.")
+            adata = sc.read_10x_h5(file_path)
+            adata.var_names_make_unique()
+    else:
+        adata = sc.read_10x_h5(file_path)
 
     return adata
 

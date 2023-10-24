@@ -15,8 +15,10 @@ class TestCreateCountMatrix(unittest.TestCase):
     file_name = 'simulated_csc_h5_data.h5'
     simulated_matrix, h5_path = test_data_pre_process.simulate_csc_h5_data(file_path=data_path,
                                                                            filename=file_name)
-    reconstructed_adata = data_pre_processing.create_count_matrix(file_path=h5_path,
-                                                                  make_genes_unique=True)
+    reconstructed_adata_unique = data_pre_processing.create_count_matrix(file_path=h5_path,
+                                                                         make_genes_unique=True)
+    reconstructed_adata_duplicates = data_pre_processing.create_count_matrix(file_path=h5_path,
+                                                                             make_genes_unique=False)
 
     def tearDown(self) -> None:
         cu.clean(folder_path=self.data_path)
@@ -27,11 +29,15 @@ class TestCreateCountMatrix(unittest.TestCase):
 
     def test_equal_values_equal_index(self):
         with self.assertRaises(ValueError):
-            self.assertEqual(self.reconstructed_adata.X.toarray(), self.simulated_matrix.A)
+            self.assertEqual(self.reconstructed_adata_unique.X.toarray(), self.simulated_matrix.A)
 
     def test_all_var_names_unique(self):
-        name_list = np.array(self.reconstructed_adata.var_names).tolist()
+        name_list = np.array(self.reconstructed_adata_unique.var_names).tolist()
         self.assertTrue(len(name_list) == len(set(name_list)))
+
+    def test_var_names_duplicates(self):
+        name_list = np.array(self.reconstructed_adata_duplicates.var_names).tolist()
+        self.assertTrue(len(name_list) != len(set(name_list)))
 
 
 class TestQualityControl(unittest.TestCase):
@@ -226,7 +232,7 @@ class TestFilterGenes(unittest.TestCase):
 
     def test_correct_genes_removed(self):
         with self.assertRaises(ValueError):
-            self.assertEquals(self.comparison_adata.X.toarray(), self.reconstructed_adata_genes_filtered.X.toarray())
+            self.assertEqual(self.comparison_adata.X.toarray(), self.reconstructed_adata_genes_filtered.X.toarray())
 
 
 if __name__ == '__main__':
