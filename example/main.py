@@ -3,8 +3,11 @@
 We'll make a first run of ScFormer using our own data. Specifically '3013_P_filtered_feature_bc_matrix.h5'
 
 """
+# TODO: look into what is being done with 'sc.pp.neighbors' and 'sc.tl.umap'
+# TODO: check what's going on with read_10X 'genome' option.
 # TODO: check if random embeddings are as good as the 'pretrained' ones.
-# TODO: normalize our  data to see if it changes the clustering
+# TODO: check if there's any difference between cell embedding strategies.
+# TODO: normalize our  data to see if it changes the clustering.
 
 import json
 
@@ -13,10 +16,11 @@ import pandas as pd
 import scanpy as sc
 import torch
 
+from scFormer_assets import utils
 from scFormer_assets.model_scformer import TransformerModel
 from tasks.data_handling import data_pre_processing as dpp
 
-our_data = dpp.create_count_matrix('data/3013_P_filtered_feature_bc_matrix.h5',
+our_data = dpp.create_count_matrix('data/pancreas.h5ad',
                                    make_genes_unique=True)
 
 our_genes = pd.Series(our_data.var_names.to_numpy(), name='genes')
@@ -69,7 +73,7 @@ gene_embeddings = model.encoder(gene_indices.to(device))
 
 final_data = our_data[:, df_intersection.genes].copy()
 
-cell_embeddings = np.matmul(final_data.X.A, gene_embeddings.detach().cpu().numpy())
+cell_embeddings = np.matmul(final_data.X, gene_embeddings.detach().cpu().numpy())
 cell_embeddings = cell_embeddings / np.linalg.norm(
     cell_embeddings, axis=1, keepdims=True
 )
@@ -79,13 +83,26 @@ final_data.obsm["X_scFormer_alejandro"] = cell_embeddings
 sc.pp.neighbors(final_data, use_rep="X_scFormer_alejandro")
 sc.tl.umap(final_data, min_dist=0.3)
 
+batch_key = 'batch'
+if not isinstance(final_data.obs[batch_key][0], str):
+    final_data.obs["str_" + batch_key] = final_data.obs[batch_key].astype(str)
+    batch_key = "str_" + batch_key
+
+str_celltype_col = 'louvain'
+celltype_col = 'int' + str_celltype_col
+final_data.obs[celltype_col] = utils.category_str2int(
+    final_data.obs[str_celltype_col]
+)
+
 fig = sc.pl.umap(
     final_data,
+    color=[batch_key, str_celltype_col],
+    ncols=2,
     frameon=False,
     return_fig=True,
 )
 fig.savefig(
-    f"embeddings_umap[weighted-mean]-test-alc-ourdata.png",
+    f"embeddings_umap[weighted-mean]-test-alc-pancreas.png",
     bbox_inches="tight",
 )
 
