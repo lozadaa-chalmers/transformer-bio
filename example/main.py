@@ -15,9 +15,9 @@ import numpy as np
 import pandas as pd
 import scanpy as sc
 import torch
+from torch import nn
 
 from scFormer_assets import utils
-from scFormer_assets.model_scformer import TransformerModel
 from tasks.data_handling import data_pre_processing as dpp
 
 random_embeddings = True
@@ -25,7 +25,7 @@ random_embeddings = True
 our_data = dpp.create_count_matrix('data/pancreas.h5ad',
                                    make_genes_unique=True)
 
-our_genes = pd.Series(our_data.var_names.to_numpy(), name='genes')
+our_genes = pd.DataFrame({'genes': our_data.var_names.to_numpy()})
 
 with open('scFormer_assets/vocab.json', "r") as f:
     vocab_dict = json.load(f)
@@ -73,32 +73,30 @@ model.eval()
 
 gene_indices = torch.as_tensor(np.array([vocab_dict.get(key) for key in df_intersection.genes.values]))
 
-#gene_embeddings = model.encoder(gene_indices.to(device))
+# gene_embeddings = model.encoder(gene_indices.to(device))
 
 if random_embeddings:
-    num_samples, embedding_dim = 172, 64 # gene_embeddings.shape
-
-    min_value = -10#int(gene_embeddings.min().item())
-    max_value = 10#int(gene_embeddings.max().item())
-    random_values = torch.randint(min_value, max_value, size=(num_samples, embedding_dim), dtype=gene_embeddings.dtype)
-    print(f"Min value: {min_value}, Max value: {max_value}")
-    gene_embeddings = random_values.to(gene_embeddings.device)
+    gene_embeddings = torch.rand(size=(172, 64))
+    # num_samples, embedding_dim = 172, 64  # gene_embeddings.shape
+    # min_value = -10  # int(gene_embeddings.min().item())
+    # max_value = 10  # int(gene_embeddings.max().item())
+    # random_values = torch.randint(min_value, max_value, size=(num_samples, embedding_dim), dtype=nn.Embedding.dtype)
+    # print(f"Min value: {min_value}, Max value: {max_value}")
+    # gene_embeddings = random_values.to(gene_embeddings.device)
 
 final_data = our_data[:, df_intersection.genes].copy()
-'''
+
 cell_embeddings = np.matmul(final_data.X, gene_embeddings.detach().cpu().numpy())
 cell_embeddings = cell_embeddings / np.linalg.norm(
     cell_embeddings, axis=1, keepdims=True
 )
-'''
 
-cell_embeddings = np.matmul(final_data.X > 0, gene_embeddings.detach().cpu().numpy())
-print(np.where(np.isnan(cell_embeddings)))
-'''
-cell_embeddings = cell_embeddings / np.linalg.norm(
+
+#cell_embeddings = np.matmul(final_data.X > 0, gene_embeddings.detach().cpu().numpy())
+
+cell_embeddings = cell_embeddings / (np.linalg.norm(
     cell_embeddings, axis=1, keepdims=True
-)
-'''
+) + 0.000000000000001)
 
 final_data.obsm["X_scFormer_alejandro"] = cell_embeddings
 
@@ -124,7 +122,7 @@ fig = sc.pl.umap(
     return_fig=True,
 )
 fig.savefig(
-    f"random_embeddings_umap[non-weighted-mean]-test-rkh-pancreas.png",
+    f"random_embeddings_umap[non-weighted-mean]-test-rkh-pancreas_2.png",
     bbox_inches="tight",
 )
 
