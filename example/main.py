@@ -39,7 +39,7 @@ df = pd.DataFrame(data={'tokens': vocab_dict.keys(),
 df_intersection = df.merge(our_genes, how='inner', left_on='tokens', right_on='genes')
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-'''
+
 model = TransformerModel(
     ntoken=len(vocab_dict),
     d_model=model_configs["embsize"],
@@ -69,7 +69,7 @@ except:
     model.load_state_dict(params)
     
 model.eval()
-'''
+
 
 gene_indices = torch.as_tensor(np.array([vocab_dict.get(key) for key in df_intersection.genes.values]))
 
