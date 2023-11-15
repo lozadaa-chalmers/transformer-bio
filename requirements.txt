@@ -2,3 +2,6 @@ h5py~=3.9.0
 scanpy~=1.9.4
 scipy~=1.11.2
 numpy~=1.24.4
+pandas~=1.5.3
+torch~=2.0.1
+tqdm~=4.66.1
