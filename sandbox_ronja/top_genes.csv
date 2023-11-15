@@ -1,0 +1,208 @@
+,top_9_genes_indices,top_9_genes,ctype
+0,1523,RBMS2,acinar
+1,700,FEM1C,acinar
+2,693,FBXO42,acinar
+3,2416,LY75-CD302,acinar
+4,2380,C8orf83,acinar
+5,179,BACE2,acinar
+6,2405,C3orf26,acinar
+7,1224,NAP1L4,acinar
+8,182,BAZ2B,acinar
+0,824,H19,beta
+1,2011,WDR31,beta
+2,1136,MITD1,beta
+3,57,AGXT,beta
+4,2010,WBP5,beta
+5,179,BACE2,beta
+6,2416,LY75-CD302,beta
+7,182,BAZ2B,beta
+8,1224,NAP1L4,beta
+0,824,H19,delta
+1,1136,MITD1,delta
+2,2011,WDR31,delta
+3,2010,WBP5,delta
+4,1375,PEF1,delta
+5,179,BACE2,delta
+6,2416,LY75-CD302,delta
+7,182,BAZ2B,delta
+8,1224,NAP1L4,delta
+0,824,H19,activated_stellate
+1,2414,HLA-DOA,activated_stellate
+2,2015,WDR70,activated_stellate
+3,2416,LY75-CD302,activated_stellate
+4,1224,NAP1L4,activated_stellate
+5,1589,S100A9,activated_stellate
+6,179,BACE2,activated_stellate
+7,182,BAZ2B,activated_stellate
+8,1381,PEX26,activated_stellate
+0,703,FGB,ductal
+1,2405,C3orf26,ductal
+2,2416,LY75-CD302,ductal
+3,2414,HLA-DOA,ductal
+4,2380,C8orf83,ductal
+5,700,FEM1C,ductal
+6,179,BACE2,ductal
+7,182,BAZ2B,ductal
+8,1224,NAP1L4,ductal
+0,1375,PEF1,alpha
+1,2414,HLA-DOA,alpha
+2,2011,WDR31,alpha
+3,2010,WBP5,alpha
+4,179,BACE2,alpha
+5,182,BAZ2B,alpha
+6,2416,LY75-CD302,alpha
+7,481,CXCL17,alpha
+8,1224,NAP1L4,alpha
+0,1375,PEF1,epsilon
+1,481,CXCL17,epsilon
+2,2011,WDR31,epsilon
+3,179,BACE2,epsilon
+4,2010,WBP5,epsilon
+5,182,BAZ2B,epsilon
+6,2416,LY75-CD302,epsilon
+7,165,ATG4C,epsilon
+8,1224,NAP1L4,epsilon
+0,1375,PEF1,gamma
+1,2414,HLA-DOA,gamma
+2,2011,WDR31,gamma
+3,2416,LY75-CD302,gamma
+4,179,BACE2,gamma
+5,2010,WBP5,gamma
+6,182,BAZ2B,gamma
+7,481,CXCL17,gamma
+8,1224,NAP1L4,gamma
+0,2015,WDR70,endothelial
+1,2433,LOC100129055,endothelial
+2,797,GPR183,endothelial
+3,2425,C21orf56,endothelial
+4,2416,LY75-CD302,endothelial
+5,2414,HLA-DOA,endothelial
+6,179,BACE2,endothelial
+7,182,BAZ2B,endothelial
+8,1224,NAP1L4,endothelial
+0,824,H19,quiescent_stellate
+1,182,BAZ2B,quiescent_stellate
+2,2015,WDR70,quiescent_stellate
+3,179,BACE2,quiescent_stellate
+4,1381,PEX26,quiescent_stellate
+5,2416,LY75-CD302,quiescent_stellate
+6,2414,HLA-DOA,quiescent_stellate
+7,1224,NAP1L4,quiescent_stellate
+8,1589,S100A9,quiescent_stellate
+0,1706,SMAD1,macrophage
+1,785,GNLY,macrophage
+2,2416,LY75-CD302,macrophage
+3,182,BAZ2B,macrophage
+4,2417,LOC283693,macrophage
+5,179,BACE2,macrophage
+6,2422,MYADML,macrophage
+7,1224,NAP1L4,macrophage
+8,156,ASIC3,macrophage
+0,1099,MATN2,schwann
+1,704,FGF1,schwann
+2,2425,C21orf56,schwann
+3,179,BACE2,schwann
+4,182,BAZ2B,schwann
+5,700,FEM1C,schwann
+6,1224,NAP1L4,schwann
+7,2416,LY75-CD302,schwann
+8,2414,HLA-DOA,schwann
+0,182,BAZ2B,mast
+1,406,COL18A1,mast
+2,2045,ZFP37,mast
+3,531,DECR1,mast
+4,2416,LY75-CD302,mast
+5,2432,C7orf42,mast
+6,875,HPGDS,mast
+7,1224,NAP1L4,mast
+8,179,BACE2,mast
+0,349,CEP70,t_cell
+1,2416,LY75-CD302,t_cell
+2,2010,WBP5,t_cell
+3,2410,LOC100499489,t_cell
+4,966,ITGB2,t_cell
+5,2304,ELFN2,t_cell
+6,182,BAZ2B,t_cell
+7,179,BACE2,t_cell
+8,1224,NAP1L4,t_cell
+0,934,IL23A,unclear
+1,1525,RC3H1,unclear
+2,1063,LRP1B,unclear
+3,1064,LRP8,unclear
+4,2414,HLA-DOA,unclear
+5,179,BACE2,unclear
+6,182,BAZ2B,unclear
+7,2380,C8orf83,unclear
+8,1224,NAP1L4,unclear
+0,966,ITGB2,mesenchymal
+1,2416,LY75-CD302,mesenchymal
+2,700,FEM1C,mesenchymal
+3,704,FGF1,mesenchymal
+4,2414,HLA-DOA,mesenchymal
+5,1224,NAP1L4,mesenchymal
+6,2008,WARS,mesenchymal
+7,182,BAZ2B,mesenchymal
+8,179,BACE2,mesenchymal
+0,1501,RAB14,not applicable
+1,481,CXCL17,not applicable
+2,497,CYP27A1,not applicable
+3,2414,HLA-DOA,not applicable
+4,182,BAZ2B,not applicable
+5,2010,WBP5,not applicable
+6,179,BACE2,not applicable
+7,2416,LY75-CD302,not applicable
+8,1224,NAP1L4,not applicable
+0,2015,WDR70,unclassified endocrine
+1,2414,HLA-DOA,unclassified endocrine
+2,1501,RAB14,unclassified endocrine
+3,182,BAZ2B,unclassified endocrine
+4,179,BACE2,unclassified endocrine
+5,497,CYP27A1,unclassified endocrine
+6,2010,WBP5,unclassified endocrine
+7,2416,LY75-CD302,unclassified endocrine
+8,1224,NAP1L4,unclassified endocrine
+0,2414,HLA-DOA,co-expression
+1,179,BACE2,co-expression
+2,497,CYP27A1,co-expression
+3,2416,LY75-CD302,co-expression
+4,57,AGXT,co-expression
+5,481,CXCL17,co-expression
+6,2011,WDR31,co-expression
+7,2010,WBP5,co-expression
+8,1224,NAP1L4,co-expression
+0,497,CYP27A1,MHC class II
+1,2015,WDR70,MHC class II
+2,966,ITGB2,MHC class II
+3,182,BAZ2B,MHC class II
+4,2045,ZFP37,MHC class II
+5,156,ASIC3,MHC class II
+6,179,BACE2,MHC class II
+7,2422,MYADML,MHC class II
+8,1224,NAP1L4,MHC class II
+0,704,FGF1,PSC
+1,2414,HLA-DOA,PSC
+2,2416,LY75-CD302,PSC
+3,2008,WARS,PSC
+4,497,CYP27A1,PSC
+5,182,BAZ2B,PSC
+6,1381,PEX26,PSC
+7,179,BACE2,PSC
+8,1224,NAP1L4,PSC
+0,497,CYP27A1,dropped
+1,2416,LY75-CD302,dropped
+2,2064,ZNF250,dropped
+3,1879,TNFRSF4,dropped
+4,182,BAZ2B,dropped
+5,2011,WDR31,dropped
+6,2414,HLA-DOA,dropped
+7,179,BACE2,dropped
+8,1224,NAP1L4,dropped
+0,2011,WDR31,mesenchyme
+1,2416,LY75-CD302,mesenchyme
+2,1879,TNFRSF4,mesenchyme
+3,2414,HLA-DOA,mesenchyme
+4,2017,WFDC2,mesenchyme
+5,2064,ZNF250,mesenchyme
+6,182,BAZ2B,mesenchyme
+7,179,BACE2,mesenchyme
+8,1224,NAP1L4,mesenchyme
