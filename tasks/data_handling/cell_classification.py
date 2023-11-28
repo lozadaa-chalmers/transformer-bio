@@ -71,7 +71,6 @@ def score_categories(pre_processed_adata: sc.AnnData = None,
     for suva_class in unique_categories_list:
         gene_list = class_df.loc[class_df['set'] == suva_class, 'genes'].tolist()
         sc.tl.score_genes(pre_processed_adata, score_name=suva_class, gene_list=gene_list)
-        sc.tl.score_genes(pre_processed_adata, score_name=suva_class, gene_list=gene_list)
 
 
 def annotate_categories(scored_adata: sc.AnnData = None,
