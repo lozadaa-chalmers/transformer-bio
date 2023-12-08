@@ -1,8 +1,8 @@
 import unittest
 
+import numpy as np
 import pandas as pd
 import scanpy as sc
-import numpy as np
 
 from tasks.data_handling import cell_classification
 
@@ -24,24 +24,22 @@ class TestScoreCategories(unittest.TestCase):
     c2_test = np.zeros((3, 1))
     c3_test = np.zeros((3, 1))
     for cell in range(3):
-        c1_test[cell] = (sum(X_data[cell, 0:3]) / 3 - sum(X_data[(cell + 1) % 3, 0:3]) / 6 -
-                         sum(X_data[(cell + 2) % 3, 0:3]) / 6)
-        c2_test[cell] = (sum(X_data[cell, 3:6]) / 3 - sum(X_data[(cell + 1) % 3, 3:6]) / 6 -
-                         sum(X_data[(cell + 2) % 3, 3:6]) / 6)
-        c3_test[cell] = (sum(X_data[cell, 6:9]) / 3 - sum(X_data[(cell + 1) % 3, 6:9]) / 6 -
-                         sum(X_data[(cell + 2) % 3, 6:9]) / 6)
+        # breakpoint()
+        c1_test[cell] = (sum(X_data[cell, 0:3]) / 3 - sum(X_data[cell, 3:]) / 6)
+        c2_test[cell] = (sum(X_data[cell, 3:6]) / 3 - sum(X_data[cell, 0:3] + X_data[cell, 6:]) / 6)
+        c3_test[cell] = (sum(X_data[cell, 6:9]) / 3 - sum(X_data[cell, 0:6]) / 6)
 
     def test_c1_correct(self):
-        with self.assertRaises(ValueError):
-            self.assertEqual(self.adata_scored.obs.c1, self.c1_test)
+        self.assertTrue(
+            (np.round(np.array(self.adata_scored.obs.c1).reshape((3, 1)), 7) == np.round(self.c1_test, 7)).all())
 
     def test_c2_correct(self):
-        with self.assertRaises(ValueError):
-            self.assertEqual(self.adata_scored.obs.c2, self.c2_test)
+        self.assertTrue(
+            (np.round(np.array(self.adata_scored.obs.c2).reshape((3, 1)), 7) == np.round(self.c2_test, 7)).all())
 
     def test_c3_correct(self):
-        with self.assertRaises(ValueError):
-            self.assertEqual(self.adata_scored.obs.c3, self.c3_test)
+        self.assertTrue(
+            (np.round(np.array(self.adata_scored.obs.c3).reshape((3, 1)), 7) == np.round(self.c3_test, 7)).all())
 
 
 class TestAnnotateCategories(unittest.TestCase):
@@ -62,5 +60,4 @@ class TestAnnotateCategories(unittest.TestCase):
     max_class_column = adata_classified.obs[unique_categories_list].idxmax(axis=1)
 
     def test_classes_correct(self):
-        with self.assertRaises(ValueError):
-            self.assertEqual(self.adata_classified.obs.suva_class, self.max_class_column)
+        self.assertTrue((self.adata_classified.obs.suva_class == self.max_class_column).all())
