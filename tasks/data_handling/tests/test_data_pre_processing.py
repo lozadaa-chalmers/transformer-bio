@@ -65,40 +65,45 @@ class TestQualityControl(unittest.TestCase):
                          list(np.sum(self.reconstructed_adata.X, axis=1)))
 
     def test_obs_total_counts_mt(self):
-        # TODO I couldn't figure out what exactly was being tested here. The object on the left is a series,
-        #  while the object on the right is a number.
-        self.assertEqual(self.reconstructed_adata.obs.total_counts_mt, sum(self.reconstructed_adata.var.mt))
+        true_indices = np.where(self.reconstructed_adata.var.mt)[0]
+        diff_array = abs(self.reconstructed_adata.obs.total_counts_mt.values -
+                         self.reconstructed_adata.X.A[:, true_indices].sum(axis=1))
+        self.assertTrue(all(x < 1e-5 for x in diff_array))
 
     def test_obs_pct_counts_mt(self):
         pct = 100 * (self.reconstructed_adata.obs.total_counts_mt / self.reconstructed_adata.obs.total_counts)
-        self.assertEqual(list(pct), list(self.reconstructed_adata.obs.pct_counts_mt))
+        self.assertEqual(list(pct),
+                         list(self.reconstructed_adata.obs.pct_counts_mt))
 
     def test_var_mt_annotated(self):
         self.assertEqual(self.reconstructed_adata.var['mt'].all(),
                          self.reconstructed_adata.var_names.str.startswith('MT').all())
 
     def test_n_cells_by_count(self):
-        # TODO: This test is failing
-
         genes = self.reconstructed_adata.X.nonzero()[1]
         counted_values = Counter(genes)
-        self.assertEqual(list(self.reconstructed_adata.var.n_cells_by_counts), list(counted_values.values()))
+        counted_list = sorted(counted_values.items())
+        n_counts = [tup[1] for tup in counted_list]
+        self.assertEqual(self.reconstructed_adata.var.n_cells_by_counts.to_list(),
+                         n_counts)
 
     def test_mean_counts(self):
         mean = self.reconstructed_adata.var.total_counts / self.n_cells
-        self.assertEqual(list(self.reconstructed_adata.var.mean_counts), list(mean))
+        self.assertEqual(list(self.reconstructed_adata.var.mean_counts),
+                         list(mean))
 
     def test_pct_dropout_by_count(self):
         genes = self.reconstructed_adata.X.nonzero()[1]
-        counted_values = list(Counter(genes).values())
-        dropout_pct = 100 * (1 - np.array(counted_values) / self.n_cells)
-        # TODO: This test is failing
-        self.assertEqual(list(self.reconstructed_adata.var.pct_dropout_by_counts), list(dropout_pct))
+        counter = Counter(genes)
+        counted_list = sorted(counter.items())
+        n_counts = [tup[1] for tup in counted_list]
+        dropout_pct = 100 * (1 - np.array(n_counts) / self.n_cells)
+        self.assertEqual(list(self.reconstructed_adata.var.pct_dropout_by_counts),
+                         list(dropout_pct))
 
     def test_var_total_counts(self):
-        # TODO: not sure what this is testing, but shapes don't match and values are different
-        self.assertAlmostEqual(self.reconstructed_adata.var.total_counts,
-                               np.sum(self.reconstructed_adata.X, axis=1))
+        self.assertEqual(self.reconstructed_adata.var.total_counts.to_list(),
+                         list(self.reconstructed_adata.X.A.sum(axis=0)))
 
 
 class TestRemoveBadCells(unittest.TestCase):
