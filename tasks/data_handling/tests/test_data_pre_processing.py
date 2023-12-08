@@ -28,8 +28,7 @@ class TestCreateCountMatrix(unittest.TestCase):
             result = data_pre_processing.create_count_matrix()
 
     def test_equal_values_equal_index(self):
-        with self.assertRaises(ValueError):
-            self.assertEqual(self.reconstructed_adata_unique.X.toarray(), self.simulated_matrix.A)
+        self.assertTrue((self.reconstructed_adata_unique.X.toarray() == self.simulated_matrix.A).all())
 
     def test_all_var_names_unique(self):
         name_list = np.array(self.reconstructed_adata_unique.var_names).tolist()
@@ -58,48 +57,48 @@ class TestQualityControl(unittest.TestCase):
     def test_n_genes_by_count(self):
         cells = self.reconstructed_adata.X.nonzero()[0]
         counted_values = Counter(cells)
-        with self.assertRaises(ValueError):
-            self.assertEqual(self.reconstructed_adata.obs.n_genes_by_counts, counted_values.values())
+        self.assertEqual(list(self.reconstructed_adata.obs.n_genes_by_counts),
+                         list(counted_values.values()))
 
     def test_obs_total_counts(self):
-        with self.assertRaises(ValueError):
-            self.assertAlmostEqual(self.reconstructed_adata.obs.total_counts, sum(self.reconstructed_adata.X))
+        self.assertEqual(list(self.reconstructed_adata.obs.total_counts),
+                         list(np.sum(self.reconstructed_adata.X, axis=1)))
 
     def test_obs_total_counts_mt(self):
-        with self.assertRaises(ValueError):
-            self.assertAlmostEqual(self.reconstructed_adata.obs.total_counts_mt, sum(self.reconstructed_adata.var.mt))
+        # TODO I couldn't figure out what exactly was being tested here. The object on the left is a series,
+        #  while the object on the right is a number.
+        self.assertEqual(self.reconstructed_adata.obs.total_counts_mt, sum(self.reconstructed_adata.var.mt))
 
     def test_obs_pct_counts_mt(self):
         pct = 100 * (self.reconstructed_adata.obs.total_counts_mt / self.reconstructed_adata.obs.total_counts)
-        with self.assertRaises(ValueError):
-            self.assertAlmostEqual(pct, self.reconstructed_adata.obs.pct_counts_mt)
+        self.assertEqual(list(pct), list(self.reconstructed_adata.obs.pct_counts_mt))
 
     def test_var_mt_annotated(self):
         self.assertEqual(self.reconstructed_adata.var['mt'].all(),
                          self.reconstructed_adata.var_names.str.startswith('MT').all())
 
     def test_n_cells_by_count(self):
+        # TODO: This test is failing
+
         genes = self.reconstructed_adata.X.nonzero()[1]
         counted_values = Counter(genes)
-        with self.assertRaises(ValueError):
-            self.assertEqual(self.reconstructed_adata.var.n_cells_by_counts, counted_values.values())
+        self.assertEqual(list(self.reconstructed_adata.var.n_cells_by_counts), list(counted_values.values()))
 
     def test_mean_counts(self):
         mean = self.reconstructed_adata.var.total_counts / self.n_cells
-        with self.assertRaises(ValueError):
-            self.assertAlmostEqual(self.reconstructed_adata.var.mean_counts, mean)
+        self.assertEqual(list(self.reconstructed_adata.var.mean_counts), list(mean))
 
     def test_pct_dropout_by_count(self):
         genes = self.reconstructed_adata.X.nonzero()[1]
         counted_values = list(Counter(genes).values())
         dropout_pct = 100 * (1 - np.array(counted_values) / self.n_cells)
-        with self.assertRaises(ValueError):
-            self.assertAlmostEqual(self.reconstructed_adata.var.pct_dropout_by_counts, dropout_pct)
+        # TODO: This test is failing
+        self.assertEqual(list(self.reconstructed_adata.var.pct_dropout_by_counts), list(dropout_pct))
 
     def test_var_total_counts(self):
-        with self.assertRaises(ValueError):
-            self.assertAlmostEqual(self.reconstructed_adata.var.total_counts,
-                                   np.sum(self.reconstructed_adata.X, axis=1))
+        # TODO: not sure what this is testing, but shapes don't match and values are different
+        self.assertAlmostEqual(self.reconstructed_adata.var.total_counts,
+                               np.sum(self.reconstructed_adata.X, axis=1))
 
 
 class TestRemoveBadCells(unittest.TestCase):
@@ -231,8 +230,8 @@ class TestFilterGenes(unittest.TestCase):
         cu.clean(folder_path=self.data_path)
 
     def test_correct_genes_removed(self):
-        with self.assertRaises(ValueError):
-            self.assertEqual(self.comparison_adata.X.toarray(), self.reconstructed_adata_genes_filtered.X.toarray())
+        self.assertTrue(
+            (self.comparison_adata.X.toarray() == self.reconstructed_adata_genes_filtered.X.toarray()).all())
 
 
 if __name__ == '__main__':

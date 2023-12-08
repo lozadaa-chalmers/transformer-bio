@@ -48,10 +48,10 @@ def create_count_matrix(
             warnings.filterwarnings("ignore",
                                     message="Variable names are not unique. "
                                             "To make them unique, call `.var_names_make_unique`.")
-            adata = sc.read(file_path)
+            adata = sc.read_10x_h5(file_path)
             adata.var_names_make_unique()
     else:
-        adata = sc.read(file_path)
+        adata = sc.read_10x_h5(file_path)
 
     return adata
 
