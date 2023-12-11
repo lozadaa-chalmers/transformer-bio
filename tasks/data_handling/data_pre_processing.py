@@ -22,7 +22,6 @@ def create_count_matrix(
         - AnnData: Count matrix from h5-file in file_path with unique variables.
 
     ---
-
     Annotated data matrix, where observations/cells are named by their barcode and variables/genes by gene name.
     Stores the following information:
 
