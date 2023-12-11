@@ -23,8 +23,7 @@ class TestReadData(unittest.TestCase):
 
         reconstructed_matrix = read_data(filename=os.path.join(self.data_path, 'simulated_h5_data.h5'),
                                          mode=mode)
-        with self.assertRaises(ValueError):
-            self.assertEqual(simulated_matrix.toarray(), reconstructed_matrix.toarray())
+        self.assertTrue((simulated_matrix.toarray() == reconstructed_matrix.toarray()).all())
 
     def test_matrix_reconstruction_csc(self, mode='csc'):
         simulated_matrix = test_data_transformation.simulate_h5_data(mode=mode,
@@ -32,8 +31,7 @@ class TestReadData(unittest.TestCase):
 
         reconstructed_matrix = read_data(filename=os.path.join(self.data_path, 'simulated_h5_data.h5'),
                                          mode=mode)
-        with self.assertRaises(ValueError):
-            self.assertEqual(simulated_matrix.toarray(), reconstructed_matrix.toarray())
+        self.assertTrue((simulated_matrix.toarray() == reconstructed_matrix.toarray()).all())
 
 
 if __name__ == '__main__':
