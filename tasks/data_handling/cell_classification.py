@@ -155,5 +155,3 @@ def classify_cells(pre_processed_adata: sc.AnnData = None,
         adata_temp.write_h5ad(save_path)
 
     return adata_classified
-
-#this is a test with ronja
