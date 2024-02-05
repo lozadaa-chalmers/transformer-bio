@@ -95,7 +95,7 @@ def get_suva_dict(dictionary: Literal['full', 'abbr'] = 'abbr') -> dict:
 def classify_cells(pre_processed_adata: sc.AnnData = None,
                    class_df: pd.DataFrame = None,
                    classification_key: str = 'suva_class',
-                   save_path: str = None,
+                   save_path: str = 'classified_temp.h5',
                    store_classification_score: bool = True,
                    use_dictionary: bool = False,
                    dictionary_type: Literal['full', 'abbr'] = 'abbr'
@@ -116,7 +116,7 @@ def classify_cells(pre_processed_adata: sc.AnnData = None,
         - class_df (DataFrame): DataFrame with categories 'genes' and 'set'. Default None
         - classification_key (str): Key to stored classification result in pre_processed_adata.obs.
             Default 'suva_class'
-        - save_path (str): Save path for h5-file, include file name. Default None.
+        - save_path (str): Save path for h5-file, include file name. Default 'classified_temp.h5'
         - store_classification_score (bool): If True the scores of each class is included in the h5-file, if False
             only the classification is included without the scores. Default True
         - use_dictionary (bool): Make True if wanting to change the names to a more readable format,
@@ -146,13 +146,12 @@ def classify_cells(pre_processed_adata: sc.AnnData = None,
         class_dict = get_suva_dict(dictionary_type)
         adata_classified.obs[classification_key] = adata_classified.obs[classification_key].replace(class_dict)
 
-    if save_path is not None:
-        if store_classification_score:
-            # Save the AnnData object to a h5 file
-            adata_classified.write_h5ad(save_path)
-        else:
-            adata_temp = adata_classified.copy()
-            adata_temp.obs.drop(columns=categories, inplace=True)
-            adata_temp.write_h5ad(save_path)
+    if store_classification_score:
+        # Save the AnnData object to a h5 file
+        adata_classified.write_h5ad(save_path)
+    else:
+        adata_temp = adata_classified.copy()
+        adata_temp.obs.drop(columns=categories, inplace=True)
+        adata_temp.write_h5ad(save_path)
 
     return adata_classified

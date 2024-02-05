@@ -6,8 +6,7 @@ import scanpy as sc
 def create_count_matrix(
         file_path: str = None,
         genome: str = None,
-        make_genes_unique: bool = False,
-        **kwargs
+        make_genes_unique: bool = False
 ) -> sc.AnnData:
     """
     ### Function that transforms 10x h5-file to a count matrix.
@@ -143,13 +142,11 @@ def normalize_data(
     ---
     Written: ronjah@chalmers.se
     """
-
     sc.pp.normalize_total(adata,
                           target_sum=target_sum,
                           exclude_highly_expressed=exclude_highly_expressed,
                           max_fraction=max_fraction,
                           inplace=True)
-
     sc.pp.log1p(adata,
                 copy=False)
 
@@ -195,10 +192,8 @@ def filter_genes(
 
 def pre_process_data_pipeline(
         file_path: str = None,
+        make_genes_unique: bool = False,
         plots: bool = False,
-        remove_cells: bool = True,
-        remove_genes: bool = True,
-        normalize: bool = True,
         max_n_genes: int = 2500,
         min_n_genes: int = 200,
         mitochondrial_percent: float = 5.0,
@@ -211,8 +206,7 @@ def pre_process_data_pipeline(
         n_top_genes: int = None,
         min_n_cells: int = 50,
         n_top_plot: int = 20,
-        save_format: str = 'png',
-        **kwargs
+        save_format: str = 'png'
 ) -> sc.AnnData:
     """
     ### Function that acts as a pipeline for pre-processing the data.
@@ -221,11 +215,9 @@ def pre_process_data_pipeline(
     
     #### Args:
         - file_path (str): File path to h5-file, default None
+        - make_genes_unique (bool): Boolean indicating if genes should be made unique. If True, '-i' suffix is added
+          to the variable name, where i is an integer. Default False.
         - plots (bool): True if wanting to save plots, else false. Default False
-        - remove_cells (bool): True if wanting to remove cells according to filters, else false. Default True.
-        - remove_genes (bool): True if wanting to remove genes according to filters, else false. Default True.
-        - normalize (bool): True if wanting to normalize each cell expression according to parameters, else false.
-            Default True.
         - max_n_genes (int): Remove cells with a gene count over max_n_genes. Default 2500
         - min_n_genes (int): Remove cells with a gene count less than min_n_genes. Default 200
         - mitochondrial_percent (float): Remove cells with a mitochondrial percent above mitochondrial_percent.
@@ -262,7 +254,7 @@ def pre_process_data_pipeline(
         raise ValueError('Need a path to h5-file.')
 
     adata = create_count_matrix(file_path,
-                                make_genes_unique=kwargs.get('make_genes_unique', None))
+                                make_genes_unique=make_genes_unique)
 
     if plots:
         allowed_formats = ['png', 'pdf', 'svg']
@@ -296,29 +288,21 @@ def pre_process_data_pipeline(
                       save='_n_genes_by_count' + '.' + save_format,
                       show=False)
 
-    if remove_cells:
-        adata_filtered_cells = remove_bad_cells(adata,
-                                                max_n_genes=max_n_genes,
-                                                min_n_genes=min_n_genes,
-                                                mitochondrial_percent=mitochondrial_percent)
-    else:
-        adata_filtered_cells = adata
+    adata_filtered_cells = remove_bad_cells(adata,
+                                            max_n_genes=max_n_genes,
+                                            min_n_genes=min_n_genes,
+                                            mitochondrial_percent=mitochondrial_percent)
+    normalize_data(adata_filtered_cells,
+                   target_sum=target_sum,
+                   exclude_highly_expressed=exclude_highly_expressed,
+                   max_fraction=max_fraction)
 
-    if normalize:
-        normalize_data(adata_filtered_cells,
-                       target_sum=target_sum,
-                       exclude_highly_expressed=exclude_highly_expressed,
-                       max_fraction=max_fraction)
-
-    if remove_genes:
-        adata_filtered_genes = filter_genes(adata=adata_filtered_cells,
-                                            min_mean=min_mean,
-                                            max_mean=max_mean,
-                                            min_dispersion=min_dispersion,
-                                            n_top_genes=n_top_genes,
-                                            min_n_cells=min_n_cells)
-    else:
-        adata_filtered_genes = adata_filtered_cells
+    adata_filtered_genes = filter_genes(adata=adata_filtered_cells,
+                                        min_mean=min_mean,
+                                        max_mean=max_mean,
+                                        min_dispersion=min_dispersion,
+                                        n_top_genes=n_top_genes,
+                                        min_n_cells=min_n_cells)
 
     if plots:
         sc.pl.highly_variable_genes(adata_filtered_genes,
