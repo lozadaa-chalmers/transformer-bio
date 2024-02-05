@@ -6,7 +6,8 @@ import scanpy as sc
 def create_count_matrix(
         file_path: str = None,
         genome: str = None,
-        make_genes_unique: bool = False
+        make_genes_unique: bool = False,
+        **kwargs
 ) -> sc.AnnData:
     """
     ### Function that transforms 10x h5-file to a count matrix.
@@ -142,11 +143,13 @@ def normalize_data(
     ---
     Written: ronjah@chalmers.se
     """
+
     sc.pp.normalize_total(adata,
                           target_sum=target_sum,
                           exclude_highly_expressed=exclude_highly_expressed,
                           max_fraction=max_fraction,
                           inplace=True)
+
     sc.pp.log1p(adata,
                 copy=False)
 
@@ -208,7 +211,8 @@ def pre_process_data_pipeline(
         n_top_genes: int = None,
         min_n_cells: int = 50,
         n_top_plot: int = 20,
-        save_format: str = 'png'
+        save_format: str = 'png',
+        **kwargs
 ) -> sc.AnnData:
     """
     ### Function that acts as a pipeline for pre-processing the data.
@@ -257,7 +261,8 @@ def pre_process_data_pipeline(
     if file_path is None:
         raise ValueError('Need a path to h5-file.')
 
-    adata = create_count_matrix(file_path)
+    adata = create_count_matrix(file_path,
+                                make_genes_unique=kwargs.get('make_genes_unique', None))
 
     if plots:
         allowed_formats = ['png', 'pdf', 'svg']
