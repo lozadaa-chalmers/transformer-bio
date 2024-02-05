@@ -143,11 +143,13 @@ def normalize_data(
     ---
     Written: ronjah@chalmers.se
     """
+
     sc.pp.normalize_total(adata,
                           target_sum=target_sum,
                           exclude_highly_expressed=exclude_highly_expressed,
                           max_fraction=max_fraction,
                           inplace=True)
+
     sc.pp.log1p(adata,
                 copy=False)
 
