@@ -192,6 +192,7 @@ def filter_genes(
 
 def pre_process_data_pipeline(
         file_path: str = None,
+        make_genes_unique: bool = False,
         plots: bool = False,
         remove_cells: bool = True,
         remove_genes: bool = True,
@@ -217,6 +218,8 @@ def pre_process_data_pipeline(
     
     #### Args:
         - file_path (str): File path to h5-file, default None
+        - make_genes_unique (bool): Boolean indicating if genes should be made unique. If True, '-i' suffix is added
+          to the variable name, where i is an integer. Default False.
         - plots (bool): True if wanting to save plots, else false. Default False
         - remove_cells (bool): True if wanting to remove cells according to filters, else false. Default True.
         - remove_genes (bool): True if wanting to remove genes according to filters, else false. Default True.
@@ -257,7 +260,8 @@ def pre_process_data_pipeline(
     if file_path is None:
         raise ValueError('Need a path to h5-file.')
 
-    adata = create_count_matrix(file_path)
+    adata = create_count_matrix(file_path,
+                                make_genes_unique=make_genes_unique)
 
     if plots:
         allowed_formats = ['png', 'pdf', 'svg']
