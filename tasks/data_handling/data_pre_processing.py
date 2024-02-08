@@ -5,7 +5,6 @@ import scanpy as sc
 
 def create_count_matrix(
         file_path: str = None,
-        genome: str = None,
         make_genes_unique: bool = False
 ) -> sc.AnnData:
     """
